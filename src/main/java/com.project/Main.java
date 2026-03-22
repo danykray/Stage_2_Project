@@ -2,8 +2,6 @@ package com.project;
 
 import custom.CustomHashMap;
 
-import java.util.HashMap;
-
 public class Main {
     static void main(String[] args) {
         CustomHashMap<Integer, String> map = new CustomHashMap<Integer, String>();
