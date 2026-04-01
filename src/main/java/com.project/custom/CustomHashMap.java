@@ -1,4 +1,4 @@
-package custom;
+package com.project.custom;
 
 import java.util.Objects;
 
