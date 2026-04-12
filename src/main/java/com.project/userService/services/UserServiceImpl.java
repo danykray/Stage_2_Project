@@ -2,10 +2,11 @@ package com.project.userService.services;
 
 import com.project.userService.dao.UserDAO;
 import com.project.userService.dao.UserDAOImpl;
-import com.project.userService.entity.User;
+import com.project.userService.entity.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class UserServiceImpl implements UserService {
@@ -22,7 +23,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(String name, String email, int age) {
+    public UserEntity createUser(String name, String email, int age) {
         logger.info("Creating new user with name: {}, email: {}, age: {}", name, email, age);
 
         if (name == null || name.trim().isEmpty()) {
@@ -37,17 +38,17 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Age must be between 0 and 150");
         }
 
-        Optional<User> existingUser = userDAO.findByEmail(email);
+        Optional<UserEntity> existingUser = userDAO.findByEmail(email);
         if (existingUser.isPresent()) {
             throw new IllegalArgumentException("User with email " + email + " already exists");
         }
 
-        User user = new User(name.trim(), email.trim(), age);
+        UserEntity user = new UserEntity(name.trim(), email.trim(), age);
         return userDAO.create(user);
     }
 
     @Override
-    public Optional<User> findUserById(Long id) {
+    public Optional<UserEntity> findUserById(Long id) {
         logger.info("Finding user by id: {}", id);
 
         if (id == null || id <= 0) {
@@ -58,34 +59,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAllUsers() {
+    public List<UserEntity> findAllUsers() {
         logger.info("Finding all users");
         return userDAO.findAll();
     }
 
     @Override
-    public User updateUser(Long id, String name, String email, Integer age) {
+    public UserEntity updateUser(Long id, String name, String email, Integer age) {
         logger.info("Updating user with id: {}", id);
 
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("Invalid user ID");
         }
 
-        Optional<User> userOpt = userDAO.findById(id);
-        if (userOpt.isEmpty()) {
-            throw new IllegalArgumentException("User with ID " + id + " not found");
-        }
-
-        User user = userOpt.get();
+        UserEntity user = userDAO.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User with ID " + id + " not found"));
 
         if (name != null && !name.trim().isEmpty()) {
             user.setName(name.trim());
         }
 
         if (email != null && !email.trim().isEmpty()) {
-            Optional<User> existingUser = userDAO.findByEmail(email.trim());
-            if (existingUser.isPresent()) {
-                existingUser.get();
+            Optional<UserEntity> existingUser = userDAO.findByEmail(email.trim());
+            if (existingUser.isPresent() && !Objects.equals(existingUser.get().getId(), id)) {
+                throw new IllegalArgumentException("Email " + email + " already in use by another user");
             }
             user.setEmail(email.trim());
         }
@@ -108,7 +105,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Invalid user ID");
         }
 
-        Optional<User> userOpt = userDAO.findById(id);
+        Optional<UserEntity> userOpt = userDAO.findById(id);
         if (userOpt.isEmpty()) {
             throw new IllegalArgumentException("User with ID " + id + " not found");
         }
@@ -117,7 +114,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findUserByEmail(String email) {
+    public Optional<UserEntity> findUserByEmail(String email) {
         logger.info("Finding user by email: {}", email);
 
         if (email == null || email.trim().isEmpty()) {
@@ -128,7 +125,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findUsersOlderThan(int age) {
+    public List<UserEntity> findUsersOlderThan(int age) {
         logger.info("Finding users older than: {}", age);
 
         if (age < 0) {

@@ -1,28 +1,28 @@
 package com.project.userService.dao;
 
-import com.project.userService.entity.User;
+import com.project.userService.entity.UserEntity;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Интерфейс Data Access Object (DAO) для выполнения операций с сущностью {@link User}.
- * 
+ * Интерфейс Data Access Object (DAO) для выполнения операций с сущностью {@link UserEntity}.
+ * <p>
  * Предоставляет набор методов для CRUD-операций (Create, Read, Update, Delete)
  * и поисковых запросов к базе данных. Реализации этого интерфейса должны обеспечивать
  * транзакционность и потокобезопасность.
- * 
+ * <p>
  * Пример использования:
  * UserDAO userDAO = new UserDAOImpl();
- * 
+ * <p>
  * Создание пользователя
  * User newUser = new User("Иван Петров", "ivan@mail.com", 25);
  * User saved = userDAO.create(newUser);
- * 
+ * <p>
  * Поиск по ID
  * Optional&lt;User&gt; user = userDAO.findById(1L);
  * user.ifPresent(u -> System.out.println(u.getName()));
- * 
+ * <p>
  * Получение всех пользователей
  * List&lt;User&gt; allUsers = userDAO.findAll();
  */
@@ -30,11 +30,11 @@ public interface UserDAO {
 
      /**
      * Создает нового пользователя в базе данных.
-     * 
-     * Сохраняет переданный объект {@link User}. После успешного сохранения
+     * <p>
+     * Сохраняет переданный объект {@link UserEntity}. После успешного сохранения
      * объект автоматически получает сгенерированный идентификатор (id)
      * и временную метку создания (createdAt).
-     * 
+     * <p>
      * Примечание: Email должен быть уникальным. При попытке сохранить
      * пользователя с уже существующим email будет выброшено исключение.
      * 
@@ -44,11 +44,11 @@ public interface UserDAO {
      * @throws RuntimeException если произошла ошибка при сохранении в базу данных
      *                          (например, нарушение уникальности email)
      */
-    User create(User user);
+     UserEntity create(UserEntity user);
 
     /**
      * Выполняет поиск пользователя по уникальному идентификатору.
-     * 
+     * <p>
      * Метод возвращает {@link Optional}, что позволяет обработать
      * ситуацию, когда пользователь с указанным ID не найден.
      * 
@@ -58,11 +58,11 @@ public interface UserDAO {
      * @throws IllegalArgumentException если {@code id} равен {@code null} или меньше или равен 0
      * @throws RuntimeException если произошла ошибка при выполнении запроса
      */
-    Optional<User> findById(Long id);
+    Optional<UserEntity> findById(Long id);
 
       /**
      * Возвращает список всех пользователей из базы данных.
-     *
+     * <p>
      * Метод извлекает всех пользователей, отсортированных по идентификатору
      * в порядке возрастания. Если в базе данных нет ни одного пользователя,
      * метод возвращает пустой список (не {@code null}).
@@ -70,15 +70,15 @@ public interface UserDAO {
      * @return список всех пользователей (никогда не возвращает {@code null})
      * @throws RuntimeException если произошла ошибка при выполнении запроса
      */
-    List<User> findAll();
+    List<UserEntity> findAll();
      
      /**
      * Обновляет информацию о существующем пользователе.
-     * 
+     * <p>
      * Полностью заменяет данные существующего пользователя на данные из переданного объекта.
-     * Идентификация обновляемой записи происходит по полю {@link User#getId()}.
+     * Идентификация обновляемой записи происходит по полю {@link UserEntity#getId()}.
      * Поле {@code createdAt} не изменяется при обновлении.
-     * 
+     * <p>
      * Примечание: Пользователь с указанным ID должен существовать в базе данных,
      * иначе будет выброшено исключение.
      * 
@@ -90,14 +90,14 @@ public interface UserDAO {
      * @throws RuntimeException если пользователь с указанным ID не существует
      *                          или произошла ошибка при обновлении
      */
-    User update(User user);
+     UserEntity update(UserEntity user);
     
     /**
      * Удаляет пользователя из базы данных по его идентификатору.
-     *
+     * <p>
      * Если пользователь с указанным ID существует, он будет удален.
-     * Если пользователь не найден, метод ничего не делает (исключение не выбрасывается).
-     * 
+     * Если пользователь не найден, метод ничего не делает. (Исключение не выбрасывается).
+     * <p>
      * Операция удаления необратима
      * 
      * @param id уникальный идентификатор пользователя для удаления
@@ -108,7 +108,7 @@ public interface UserDAO {
 
     /**
      * Выполняет поиск пользователя по email адресу.
-     * 
+     * <p>
      * Email является уникальным полем в базе данных, поэтому метод возвращает
      * не более одного пользователя. Поиск чувствителен к регистру символов.
      * 
@@ -118,11 +118,11 @@ public interface UserDAO {
      * @throws IllegalArgumentException если {@code email} равен {@code null} или пустой строке
      * @throws RuntimeException если произошла ошибка при выполнении запроса
      */
-    Optional<User> findByEmail(String email);
+    Optional<UserEntity> findByEmail(String email);
      
      /**
      * Находит всех пользователей, возраст которых превышает указанное значение.
-     * 
+     * <p>
      * Возвращает список пользователей, удовлетворяющих условию {@code age > указанное значение}.
      * Результат сортируется по возрасту в порядке возрастания.
      * 
@@ -133,5 +133,5 @@ public interface UserDAO {
      * @throws IllegalArgumentException если {@code age} меньше 0
      * @throws RuntimeException если произошла ошибка при выполнении запроса
      */
-    List<User> findByAgeGreaterThan(int age);
+    List<UserEntity> findByAgeGreaterThan(int age);
 }

@@ -1,26 +1,26 @@
 package com.project.userService.services;
 
-import com.project.userService.entity.User;
+import com.project.userService.entity.UserEntity;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Интерфейс сервисного слоя для управления пользователями.
- * 
+ * <p>
  * Предоставляет набор методов для выполнения бизнес-логики при работе с сущностью User.
  * Содержит валидацию входных данных, проверку бизнес-правил и делегирование вызовов
  * в DAO слой.
- * 
+ * <p>
  * Пример использования:
  * UserService userService = new UserServiceImpl();
- * 
+ * <p>
  * // Создание пользователя
  * User newUser = userService.createUser("Иван Петров", "ivan@mail.com", 25);
- * 
+ * <p>
  * // Поиск пользователя по ID
  * Optional&lt;User&gt; user = userService.findUserById(1L);
- * 
+ * <p>
  * // Получение всех пользователей
  * List&lt;User&gt; allUsers = userService.findAllUsers();
  */
@@ -28,12 +28,12 @@ public interface UserService {
 
     /**
      * Создает нового пользователя.
-     * 
+     * <p>
      * Выполняет валидацию входных данных:
      * - имя не может быть пустым
      * - email не может быть пустым и должен быть уникальным
      * - возраст должен быть в диапазоне от 0 до 150 лет
-     * 
+     * <p>
      * При успешной валидации создает объект User и сохраняет его через DAO слой.
      * 
      * @param name имя пользователя, не может быть null или пустым
@@ -47,12 +47,12 @@ public interface UserService {
      *         - пользователь с таким email уже существует
      * @throws RuntimeException если произошла ошибка при сохранении в базу данных
      */
-    User createUser(String name, String email, int age);
+    UserEntity createUser(String name, String email, int age);
 
     /**
      * Находит пользователя по его идентификатору.
-     * 
-     * Выполняет поиск пользователя в базе данных по указанному ID.
+     * <p>
+     * Выполняет поиск пользователя в базе данных по-указанному ID.
      * Результат возвращается в виде Optional для безопасной обработки случая,
      * когда пользователь не найден.
      * 
@@ -61,26 +61,26 @@ public interface UserService {
      * @throws IllegalArgumentException если id равен null или меньше или равен 0
      * @throws RuntimeException если произошла ошибка при выполнении запроса
      */
-    Optional<User> findUserById(Long id);
+    Optional<UserEntity> findUserById(Long id);
 
     /**
      * Возвращает список всех пользователей.
-     * 
+     * <p>
      * Извлекает всех пользователей из базы данных, отсортированных по идентификатору.
      * Если пользователи отсутствуют, возвращает пустой список.
      * 
      * @return список всех пользователей, никогда не возвращает null
      * @throws RuntimeException если произошла ошибка при выполнении запроса
      */
-    List<User> findAllUsers();
+    List<UserEntity> findAllUsers();
 
     /**
      * Обновляет информацию о существующем пользователе.
-     * 
+     * <p>
      * Обновляет данные пользователя с указанным ID. Позволяет обновить имя, email и возраст.
      * Каждое из полей может быть обновлено независимо (параметры могут быть null,
      * что означает отсутствие изменений).
-     * 
+     * <p>
      * Выполняет валидацию:
      * - пользователь с указанным ID должен существовать
      * - если email изменяется, он должен быть уникальным
@@ -98,11 +98,11 @@ public interface UserService {
      *         - новый возраст вне диапазона 0-150
      * @throws RuntimeException если произошла ошибка при обновлении в базе данных
      */
-    User updateUser(Long id, String name, String email, Integer age);
+    UserEntity updateUser(Long id, String name, String email, Integer age);
 
     /**
      * Удаляет пользователя по идентификатору.
-     * 
+     * <p>
      * Удаляет пользователя из базы данных. Перед удалением проверяет существование
      * пользователя. Если пользователь не найден, выбрасывает исключение.
      * 
@@ -116,7 +116,7 @@ public interface UserService {
 
     /**
      * Находит пользователя по email адресу.
-     * 
+     * <p>
      * Выполняет поиск пользователя с указанным email. Email является уникальным полем,
      * поэтому возвращается не более одного пользователя.
      * 
@@ -125,11 +125,11 @@ public interface UserService {
      * @throws IllegalArgumentException если email равен null или пустой строке
      * @throws RuntimeException если произошла ошибка при выполнении запроса
      */
-    Optional<User> findUserByEmail(String email);
+    Optional<UserEntity> findUserByEmail(String email);
 
      /**
      * Находит всех пользователей старше указанного возраста.
-     * 
+     * <p>
      * Возвращает список пользователей, у которых возраст строго больше указанного значения.
      * Результат сортируется по возрасту в порядке возрастания.
      * 
@@ -139,11 +139,11 @@ public interface UserService {
      * @throws IllegalArgumentException если age меньше 0
      * @throws RuntimeException если произошла ошибка при выполнении запроса
      */
-    List<User> findUsersOlderThan(int age);
+    List<UserEntity> findUsersOlderThan(int age);
 
      /**
      * Проверяет существование пользователя с указанным идентификатором.
-     * 
+     * <p>
      * Удобный метод для быстрой проверки существования пользователя без получения
      * полного объекта.
      * 
@@ -156,7 +156,7 @@ public interface UserService {
 
     /**
      * Возвращает общее количество пользователей в базе данных.
-     * 
+     * <p>
      * Полезный метод для получения статистики или проверки наличия данных
      * без загрузки полных списков.
      * 

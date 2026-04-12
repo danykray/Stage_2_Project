@@ -1,6 +1,6 @@
 package com.project;
 
-import com.project.userService.entity.User;
+import com.project.userService.entity.UserEntity;
 import com.project.userService.services.UserService;
 import com.project.userService.services.UserServiceImpl;
 import com.project.userService.util.HibernateUtil;
@@ -91,7 +91,7 @@ public class Main {
         int age = Integer.parseInt(scanner.nextLine());
 
         try {
-            User user = userService.createUser(name, email, age);
+            UserEntity user = userService.createUser(name, email, age);
             System.out.println("Пользователь успешно создан: " + user);
         } catch (IllegalArgumentException e) {
             System.err.println("Не удалось создать пользователя: " + e.getMessage());
@@ -102,7 +102,7 @@ public class Main {
         System.out.println("\n=== Поиск пользователя по ID ===");
         Long id = getLongInput("Введите ID пользователя: ");
 
-        Optional<User> userOpt = userService.findUserById(id);
+        Optional<UserEntity> userOpt = userService.findUserById(id);
 
         if (userOpt.isPresent()) {
             System.out.println("Пользователь найден: " + userOpt.get());
@@ -113,7 +113,7 @@ public class Main {
 
     private static void findAllUsers() {
         System.out.println("\n=== Все пользователи ===");
-        List<User> users = userService.findAllUsers();
+        List<UserEntity> users = userService.findAllUsers();
 
         if (users.isEmpty()) {
             System.out.println("Пользователи не найдены");
@@ -127,10 +127,10 @@ public class Main {
         System.out.println("\n=== Обновление пользователя ===");
         Long id = getLongInput("Введите ID пользователя для обновления: ");
 
-        Optional<User> userOpt = userService.findUserById(id);
+        Optional<UserEntity> userOpt = userService.findUserById(id);
 
         if (userOpt.isPresent()) {
-            User currentUser = userOpt.get();
+            UserEntity currentUser = userOpt.get();
             System.out.println("Текущий пользователь: " + currentUser);
 
             System.out.print("Введите новое имя (оставьте пустым, чтобы не менять): ");
@@ -153,7 +153,7 @@ public class Main {
             }
 
             try {
-                User updatedUser = userService.updateUser(id, name, email, age);
+                UserEntity updatedUser = userService.updateUser(id, name, email, age);
                 System.out.println("Пользователь успешно обновлен: " + updatedUser);
             } catch (IllegalArgumentException e) {
                 System.err.println("Не удалось обновить пользователя: " + e.getMessage());
@@ -167,7 +167,7 @@ public class Main {
         System.out.println("\n=== Удаление пользователя ===");
         Long id = getLongInput("Введите ID пользователя для удаления: ");
 
-        Optional<User> userOpt = userService.findUserById(id);
+        Optional<UserEntity> userOpt = userService.findUserById(id);
 
         if (userOpt.isPresent()) {
             System.out.println("Пользователь для удаления: " + userOpt.get());
@@ -195,7 +195,7 @@ public class Main {
         String email = scanner.nextLine();
 
         try {
-            Optional<User> userOpt = userService.findUserByEmail(email);
+            Optional<UserEntity> userOpt = userService.findUserByEmail(email);
 
             if (userOpt.isPresent()) {
                 System.out.println("Пользователь найден: " + userOpt.get());
@@ -212,7 +212,7 @@ public class Main {
         int age = getIntInput("Введите минимальный возраст: ");
 
         try {
-            List<User> users = userService.findUsersOlderThan(age);
+            List<UserEntity> users = userService.findUsersOlderThan(age);
 
             if (users.isEmpty()) {
                 System.out.println("Пользователи старше " + age + " лет не найдены");

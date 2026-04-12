@@ -1,6 +1,6 @@
 package com.project.userService.dao;
 
-import com.project.userService.entity.User;
+import com.project.userService.entity.UserEntity;
 import com.project.userService.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -19,7 +19,7 @@ public class UserDAOImpl implements UserDAO {
     private static final Logger logger = LoggerFactory.getLogger(UserDAOImpl.class);
 
     @Override
-    public User create(User user) {
+    public UserEntity create(UserEntity user) {
         Transaction transaction = null;
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -38,9 +38,9 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public Optional<User> findById(Long id) {
+    public Optional<UserEntity> findById(Long id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            User user = session.get(User.class, id);
+            UserEntity user = session.find(UserEntity.class, id);
             logger.debug("Finding user by id: {}", id);
             return Optional.ofNullable(user);
         } catch (PersistenceException e) {
@@ -50,16 +50,16 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<UserEntity> findAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder cb = session.getCriteriaBuilder();
-            CriteriaQuery<User> cr = cb.createQuery(User.class);
-            Root<User> root = cr.from(User.class);
+            CriteriaQuery<UserEntity> cr = cb.createQuery(UserEntity.class);
+            Root<UserEntity> root = cr.from(UserEntity.class);
             cr.select(root);
             cr.orderBy(cb.asc(root.get("id")));
 
-            Query<User> query = session.createQuery(cr);
-            List<User> users = query.getResultList();
+            Query<UserEntity> query = session.createQuery(cr);
+            List<UserEntity> users = query.getResultList();
             logger.info("Found {} users", users.size());
             return users;
         } catch (PersistenceException e) {
@@ -69,12 +69,12 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public User update(User user) {
+    public UserEntity update(UserEntity user) {
         Transaction transaction = null;
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            User updatedUser = session.merge(user);
+            UserEntity updatedUser = session.merge(user);
             transaction.commit();
             logger.info("User updated successfully: {}", updatedUser);
             return updatedUser;
@@ -93,7 +93,7 @@ public class UserDAOImpl implements UserDAO {
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            User user = session.get(User.class, id);
+            UserEntity user = session.find(UserEntity.class, id);
             if (user != null) {
                 session.remove(user);
                 logger.info("User deleted successfully with id: {}", id);
@@ -111,16 +111,16 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public Optional<UserEntity> findByEmail(String email) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder cb = session.getCriteriaBuilder();
-            CriteriaQuery<User> cr = cb.createQuery(User.class);
-            Root<User> root = cr.from(User.class);
+            CriteriaQuery<UserEntity> cr = cb.createQuery(UserEntity.class);
+            Root<UserEntity> root = cr.from(UserEntity.class);
             cr.select(root);
             cr.where(cb.equal(root.get("email"), email));
 
-            Query<User> query = session.createQuery(cr);
-            User user = query.getSingleResult();
+            Query<UserEntity> query = session.createQuery(cr);
+            UserEntity user = query.getSingleResult();
             logger.debug("Finding user by email: {}", email);
             return Optional.ofNullable(user);
         } catch (PersistenceException e) {
@@ -130,17 +130,17 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public List<User> findByAgeGreaterThan(int age) {
+    public List<UserEntity> findByAgeGreaterThan(int age) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder cb = session.getCriteriaBuilder();
-            CriteriaQuery<User> cr = cb.createQuery(User.class);
-            Root<User> root = cr.from(User.class);
+            CriteriaQuery<UserEntity> cr = cb.createQuery(UserEntity.class);
+            Root<UserEntity> root = cr.from(UserEntity.class);
             cr.select(root);
             cr.where(cb.gt(root.get("age"), age));
             cr.orderBy(cb.asc(root.get("age")));
 
-            Query<User> query = session.createQuery(cr);
-            List<User> users = query.getResultList();
+            Query<UserEntity> query = session.createQuery(cr);
+            List<UserEntity> users = query.getResultList();
             logger.info("Found {} users older than {}", users.size(), age);
             return users;
         } catch (PersistenceException e) {
