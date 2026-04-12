@@ -21,6 +21,7 @@
         <!-- Версии для тестирования -->
         <junit.version>6.0.2</junit.version>
         <mockito.version>5.23.0</mockito.version>
+        <testcontainers.version>2.0.4</testcontainers.version>
 
         <!-- Версии плагинов -->
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
@@ -61,6 +62,14 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Testcontainers -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
