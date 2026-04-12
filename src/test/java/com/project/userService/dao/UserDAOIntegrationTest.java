@@ -4,6 +4,7 @@ import com.project.userService.entity.UserEntity;
 import com.project.userService.util.TestHibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,8 +32,8 @@ class UserDAOIntegrationTest {
     @BeforeEach
     void setUp() {
         try (Session session = sessionFactory.openSession()) {
-            org.hibernate.Transaction transaction = session.beginTransaction();
-            session.createNativeQuery("DELETE FROM users").executeUpdate();
+            Transaction transaction = session.beginTransaction();
+            session.createMutationQuery("DELETE FROM UserEntity").executeUpdate();
             transaction.commit();
         }
     }
@@ -107,6 +108,7 @@ class UserDAOIntegrationTest {
         assertThat(updatedUser.getAge()).isEqualTo(41);
 
         Optional<UserEntity> foundUser = userDAO.findById(savedUser.getId());
+        assertThat(foundUser).isPresent();
         assertThat(foundUser.get().getName()).isEqualTo("Дмитрий Орлов Обновленный");
     }
 
