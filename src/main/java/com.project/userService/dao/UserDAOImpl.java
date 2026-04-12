@@ -40,7 +40,6 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public Optional<User> findById(Long id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            // Используем get с правильным классом
             User user = session.get(User.class, id);
             logger.debug("Finding user by id: {}", id);
             return Optional.ofNullable(user);
@@ -53,7 +52,6 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public List<User> findAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            // Используем Criteria API вместо HQL
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<User> cr = cb.createQuery(User.class);
             Root<User> root = cr.from(User.class);
