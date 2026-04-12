@@ -4,38 +4,41 @@ import com.project.userService.entity.UserEntity;
 import com.project.userService.util.TestHibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+
 import java.util.List;
 import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserDAOIntegrationTest {
 
     private UserDAO userDAO;
     private SessionFactory sessionFactory;
-    private Session session;
-    private Transaction transaction;
+
+    @BeforeAll
+    void setUpAll() {
+        sessionFactory = TestHibernateUtil.getSessionFactory();
+        userDAO = new TestUserDAOImpl(sessionFactory);
+    }
 
     @BeforeEach
     void setUp() {
-        sessionFactory = TestHibernateUtil.getSessionFactory();
-        userDAO = new UserDAOImpl();
-        session = sessionFactory.openSession();
-        transaction = session.beginTransaction();
-        session.createNativeQuery("TRUNCATE TABLE users RESTART IDENTITY CASCADE").executeUpdate();
-        transaction.commit();
-        session.close();
+        try (Session session = sessionFactory.openSession()) {
+            org.hibernate.Transaction transaction = session.beginTransaction();
+            session.createNativeQuery("DELETE FROM users").executeUpdate();
+            transaction.commit();
+        }
     }
 
-    @AfterEach
-    void tearDown() {
-        if (session != null && session.isOpen()) {
-            session.close();
-        }
+    @AfterAll
+    void tearDownAll() {
         TestHibernateUtil.shutdown();
     }
 

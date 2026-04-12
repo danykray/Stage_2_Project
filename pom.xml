@@ -19,8 +19,9 @@
         <slf4j.version>2.0.9</slf4j.version>
 
         <!-- Версии для тестирования -->
-        <junit.version>6.0.2</junit.version>
+        <junit.version>6.0.3</junit.version>
         <mockito.version>5.23.0</mockito.version>
+        <mockito-junit-jupiter.version>5.23.0</mockito-junit-jupiter.version>
         <testcontainers.version>2.0.4</testcontainers.version>
         <assertj.version>4.0.0-M1</assertj.version>
         <h2database.version>2.4.240</h2database.version>
@@ -56,7 +57,7 @@
         <!-- JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
@@ -66,6 +67,13 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito-junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
 
