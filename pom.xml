@@ -18,6 +18,9 @@
         <postgresql.version>42.7.3</postgresql.version>
         <slf4j.version>2.0.9</slf4j.version>
 
+        <!-- Версии для тестирования -->
+        <junit.version>6.0.2</junit.version>
+
         <!-- Версии плагинов -->
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
     </properties>
@@ -42,6 +45,14 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+
+        <!-- JUnit 5 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
