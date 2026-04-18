@@ -1,28 +1,33 @@
-package com.project.userService.services;
+package com.project.userService.service;
 
-import com.project.userService.entity.UserEntity;
+import com.project.userService.dto.UserRequestDto;
+import com.project.userService.dto.UserResponseDto;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Интерфейс сервисного слоя для управления пользователями.
  * <p>
  * Предоставляет набор методов для выполнения бизнес-логики при работе с сущностью User.
  * Содержит валидацию входных данных, проверку бизнес-правил и делегирование вызовов
- * в DAO слой.
+ * в Repository слой.
+ * </p>
  * <p>
  * Пример использования:
- * UserService userService = new UserServiceImpl();
- * <p>
+ * <pre>
+ * UserService userService = new UserServiceImpl(userRepository, userMapper);
+ *
  * // Создание пользователя
- * User newUser = userService.createUser("Иван Петров", "ivan@mail.com", 25);
- * <p>
+ * UserRequestDto request = new UserRequestDto("Иван", "ivan@mail.com", 25);
+ * UserResponseDto response = userService.createUser(request);
+ *
  * // Поиск пользователя по ID
- * Optional&lt;User&gt; user = userService.findUserById(1L);
- * <p>
+ * UserResponseDto user = userService.getUserById(1L);
+ *
  * // Получение всех пользователей
- * List&lt;User&gt; allUsers = userService.findAllUsers();
+ * List&lt;UserResponseDto&gt; allUsers = userService.getAllUsers();
+ * </pre>
+ * </p>
  */
 public interface UserService {
 
@@ -30,16 +35,17 @@ public interface UserService {
      * Создает нового пользователя.
      * <p>
      * Выполняет валидацию входных данных:
-     * - имя не может быть пустым
-     * - email не может быть пустым и должен быть уникальным
-     * - возраст должен быть в диапазоне от 0 до 150 лет
+     * <ul>
+     *   <li>имя не может быть пустым</li>
+     *   <li>email не может быть пустым и должен быть уникальным</li>
+     *   <li>возраст должен быть в диапазоне от 0 до 150 лет</li>
+     * </ul>
+     * </p>
      * <p>
-     * При успешной валидации создает объект User и сохраняет его через DAO слой.
-     * 
-     * @param name имя пользователя, не может быть null или пустым
-     * @param email email пользователя, не может быть null или пустым, должен быть уникальным
-     * @param age возраст пользователя, должен быть в диапазоне от 0 до 150
-     * @return созданный пользователь с заполненным идентификатором и датой создания
+     * При успешной валидации создает объект User и сохраняет его через Repository слой.
+     * </p>
+     * @param requestDto DTO с данными для создания пользователя (name, email, age)
+     * @return DTO созданного пользователя с заполненным идентификатором и датой создания
      * @throws IllegalArgumentException если:
      *         - имя пустое
      *         - email пустой
@@ -47,65 +53,68 @@ public interface UserService {
      *         - пользователь с таким email уже существует
      * @throws RuntimeException если произошла ошибка при сохранении в базу данных
      */
-    UserEntity createUser(String name, String email, int age);
+    UserResponseDto createUser(UserRequestDto requestDto);
 
     /**
      * Находит пользователя по его идентификатору.
      * <p>
      * Выполняет поиск пользователя в базе данных по-указанному ID.
-     * Результат возвращается в виде Optional для безопасной обработки случая,
-     * когда пользователь не найден.
-     * 
+     * Если пользователь не найден, выбрасывает исключение.
+     * </p>
      * @param id идентификатор пользователя, должен быть положительным числом
-     * @return Optional с найденным пользователем или пустой Optional, если пользователь не существует
+     * @return DTO найденного пользователя
      * @throws IllegalArgumentException если id равен null или меньше или равен 0
-     * @throws RuntimeException если произошла ошибка при выполнении запроса
+     * @throws RuntimeException если пользователь с указанным ID не найден
+     *                           или произошла ошибка при выполнении запроса
      */
-    Optional<UserEntity> findUserById(Long id);
+    UserResponseDto getUserById(Long id);
 
     /**
      * Возвращает список всех пользователей.
      * <p>
-     * Извлекает всех пользователей из базы данных, отсортированных по идентификатору.
+     * Извлекает всех пользователей из базы данных, преобразует их в DTO.
      * Если пользователи отсутствуют, возвращает пустой список.
-     * 
-     * @return список всех пользователей, никогда не возвращает null
+     * </p>
+     *
+     * @return список DTO всех пользователей, никогда не возвращает null
      * @throws RuntimeException если произошла ошибка при выполнении запроса
      */
-    List<UserEntity> findAllUsers();
+    List<UserResponseDto> getAllUsers();
 
     /**
      * Обновляет информацию о существующем пользователе.
      * <p>
      * Обновляет данные пользователя с указанным ID. Позволяет обновить имя, email и возраст.
-     * Каждое из полей может быть обновлено независимо (параметры могут быть null,
-     * что означает отсутствие изменений).
+     * Все поля обновляются одновременно (передаются в DTO).
+     * </p>
      * <p>
      * Выполняет валидацию:
-     * - пользователь с указанным ID должен существовать
-     * - если email изменяется, он должен быть уникальным
-     * - если возраст изменяется, он должен быть в диапазоне 0-150
-     * 
+     * <ul>
+     *   <li>пользователь с указанным ID должен существовать</li>
+     *   <li>email должен быть уникальным (если изменяется)</li>
+     *   <li>возраст должен быть в диапазоне 0-150</li>
+     * </ul>
+     * </p>
+     *
      * @param id идентификатор обновляемого пользователя, должен быть положительным
-     * @param name новое имя (может быть null, если не требуется обновление)
-     * @param email новый email (может быть null, если не требуется обновление)
-     * @param age новый возраст (может быть null, если не требуется обновление)
-     * @return обновленный пользователь
+     * @param requestDto DTO с обновленными данными (name, email, age)
+     * @return DTO обновленного пользователя
      * @throws IllegalArgumentException если:
      *         - id равен null или меньше или равен 0
      *         - пользователь с указанным ID не найден
      *         - новый email уже используется другим пользователем
-     *         - новый возраст вне диапазона 0-150
+     *         - возраст вне диапазона 0-150
      * @throws RuntimeException если произошла ошибка при обновлении в базе данных
      */
-    UserEntity updateUser(Long id, String name, String email, Integer age);
+    UserResponseDto updateUser(Long id, UserRequestDto requestDto);
 
     /**
      * Удаляет пользователя по идентификатору.
      * <p>
      * Удаляет пользователя из базы данных. Перед удалением проверяет существование
      * пользователя. Если пользователь не найден, выбрасывает исключение.
-     * 
+     * </p>
+     *
      * @param id идентификатор пользователя для удаления, должен быть положительным
      * @throws IllegalArgumentException если:
      *         - id равен null или меньше или равен 0
@@ -119,34 +128,38 @@ public interface UserService {
      * <p>
      * Выполняет поиск пользователя с указанным email. Email является уникальным полем,
      * поэтому возвращается не более одного пользователя.
-     * 
+     * </p>
+     *
      * @param email email пользователя для поиска, не может быть null или пустым
-     * @return Optional с найденным пользователем или пустой Optional, если пользователь не найден
+     * @return DTO найденного пользователя
      * @throws IllegalArgumentException если email равен null или пустой строке
-     * @throws RuntimeException если произошла ошибка при выполнении запроса
+     * @throws RuntimeException если пользователь с указанным email не найден
+     *                           или произошла ошибка при выполнении запроса
      */
-    Optional<UserEntity> findUserByEmail(String email);
+    UserResponseDto getUserByEmail(String email);
 
-     /**
+    /**
      * Находит всех пользователей старше указанного возраста.
      * <p>
      * Возвращает список пользователей, у которых возраст строго больше указанного значения.
      * Результат сортируется по возрасту в порядке возрастания.
-     * 
+     * </p>
+     *
      * @param age минимальный возраст, должен быть неотрицательным числом
-     * @return список пользователей старше указанного возраста, отсортированный по возрасту.
+     * @return список DTO пользователей старше указанного возраста, отсортированный по возрасту.
      *         Если подходящих пользователей нет, возвращает пустой список
      * @throws IllegalArgumentException если age меньше 0
      * @throws RuntimeException если произошла ошибка при выполнении запроса
      */
-    List<UserEntity> findUsersOlderThan(int age);
+    List<UserResponseDto> getUsersOlderThan(int age);
 
-     /**
+    /**
      * Проверяет существование пользователя с указанным идентификатором.
      * <p>
      * Удобный метод для быстрой проверки существования пользователя без получения
      * полного объекта.
-     * 
+     * </p>
+     *
      * @param id идентификатор пользователя, должен быть положительным
      * @return true если пользователь существует, false в противном случае
      * @throws IllegalArgumentException если id равен null или меньше или равен 0
@@ -159,7 +172,8 @@ public interface UserService {
      * <p>
      * Полезный метод для получения статистики или проверки наличия данных
      * без загрузки полных списков.
-     * 
+     * </p>
+     *
      * @return количество пользователей в базе данных (0, если пользователей нет)
      * @throws RuntimeException если произошла ошибка при выполнении запроса
      */

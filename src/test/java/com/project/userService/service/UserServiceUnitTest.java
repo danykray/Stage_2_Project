@@ -1,6 +1,5 @@
-package com.project.userService.services;
+package com.project.userService.service;
 
-import com.project.userService.dao.UserDAO;
 import com.project.userService.entity.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

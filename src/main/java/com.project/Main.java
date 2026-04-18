@@ -1,9 +1,8 @@
 package com.project;
 
 import com.project.userService.entity.UserEntity;
-import com.project.userService.services.UserService;
-import com.project.userService.services.UserServiceImpl;
-import com.project.userService.util.HibernateUtil;
+import com.project.userService.service.UserService;
+import com.project.userService.service.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
