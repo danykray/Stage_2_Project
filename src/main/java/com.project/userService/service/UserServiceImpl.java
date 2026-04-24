@@ -14,18 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Реализация сервисного слоя для управления пользователями.
- * <p>
- * Предоставляет реализацию методов бизнес-логики с использованием Spring Data JPA.
- * Использует {@link UserRepository} для доступа к данным и {@link UserMapper}
- * для преобразования между Entity и DTO.
- * </p>
- * <p>
- * Все методы, изменяющие данные, аннотированы {@link Transactional} для обеспечения
- * атомарности операций.
- * </p>
- */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -36,18 +24,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    /**
-     * Создает нового пользователя.
-     * <p>
-     * Выполняет проверку на уникальность email перед сохранением.
-     * При успешной валидации преобразует DTO в Entity, сохраняет в базу данных
-     * и возвращает DTO сохраненного пользователя.
-     * </p>
-     *
-     * @param requestDto DTO с данными для создания пользователя
-     * @return DTO созданного пользователя с заполненным ID и createdAt
-     * @throws IllegalArgumentException если пользователь с таким email уже существует
-     */
     @Override
     @Transactional
     public UserResponseDto createUser(UserRequestDto requestDto) {
@@ -65,17 +41,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponseDto(savedEntity);
     }
 
-    /**
-     * Находит пользователя по идентификатору.
-     * <p>
-     * Выполняет поиск в базе данных. Если пользователь не найден, выбрасывает
-     * исключение с информативным сообщением.
-     * </p>
-     *
-     * @param id идентификатор пользователя
-     * @return DTO найденного пользователя
-     * @throws IllegalArgumentException если пользователь с указанным ID не найден
-     */
     @Override
     public UserResponseDto getUserById(Long id) {
         logger.info("Finding user by id: {}", id);
@@ -86,14 +51,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponseDto(entity);
     }
 
-    /**
-     * Возвращает список всех пользователей.
-     * <p>
-     * Извлекает всех пользователей из базы данных и преобразует их в DTO.
-     * </p>
-     *
-     * @return список DTO всех пользователей (может быть пустым)
-     */
     @Override
     public List<UserResponseDto> getAllUsers() {
         logger.info("Finding all users");
@@ -103,22 +60,6 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Обновляет информацию о существующем пользователе.
-     * <p>
-     * Проверяет существование пользователя, затем обновляет все поля из DTO.
-     * При изменении email выполняет проверку на уникальность.
-     * </p>
-     *
-     * @param id идентификатор обновляемого пользователя
-     * @param requestDto DTO с обновленными данными
-     * @return DTO обновленного пользователя
-     * @throws IllegalArgumentException если:
-     *         <ul>
-     *           <li>пользователь с указанным ID не найден</li>
-     *           <li>новый email уже используется другим пользователем</li>
-     *         </ul>
-     */
     @Override
     @Transactional
     public UserResponseDto updateUser(Long id, UserRequestDto requestDto) {
@@ -142,15 +83,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponseDto(updatedEntity);
     }
 
-    /**
-     * Удаляет пользователя по идентификатору.
-     * <p>
-     * Проверяет существование пользователя перед удалением.
-     * </p>
-     *
-     * @param id идентификатор пользователя для удаления
-     * @throws IllegalArgumentException если пользователь с указанным ID не найден
-     */
     @Override
     @Transactional
     public void deleteUser(Long id) {
@@ -164,20 +96,6 @@ public class UserServiceImpl implements UserService {
         logger.info("User deleted successfully with id: {}", id);
     }
 
-    /**
-     * Находит пользователя по email адресу.
-     * <p>
-     * Выполняет поиск пользователя с указанным email. Email является уникальным полем.
-     * </p>
-     *
-     * @param email email пользователя
-     * @return DTO найденного пользователя
-     * @throws IllegalArgumentException если:
-     *         <ul>
-     *           <li>email равен null или пустой строке</li>
-     *           <li>пользователь с указанным email не найден</li>
-     *         </ul>
-     */
     @Override
     public UserResponseDto getUserByEmail(String email) {
         logger.info("Finding user by email: {}", email);
@@ -192,16 +110,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponseDto(entity);
     }
 
-    /**
-     * Находит всех пользователей старше указанного возраста.
-     * <p>
-     * Использует метод репозитория {@link UserRepository#findByAgeGreaterThan(int)}.
-     * </p>
-     *
-     * @param age минимальный возраст
-     * @return список DTO пользователей старше указанного возраста
-     * @throws IllegalArgumentException если age меньше 0
-     */
     @Override
     public List<UserResponseDto> getUsersOlderThan(int age) {
         logger.info("Finding users older than: {}", age);
@@ -215,23 +123,12 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Проверяет существование пользователя с указанным идентификатором.
-     *
-     * @param id идентификатор пользователя
-     * @return true если пользователь существует, false в противном случае
-     */
     @Override
     public boolean isUserExists(Long id) {
         logger.debug("Checking if user exists with id: {}", id);
         return userRepository.existsById(id);
     }
 
-    /**
-     * Возвращает общее количество пользователей в базе данных.
-     *
-     * @return количество пользователей
-     */
     @Override
     public long getUsersCount() {
         logger.debug("Getting total users count");
